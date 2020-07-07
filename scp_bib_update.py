@@ -14,14 +14,14 @@ import sys
 from pymarc import MARCReader, MARCWriter
 
 def delete_590(record):
-	"""	Delete 590 field containing $a UCLA Library - CDL shared resource """
+	""" Delete 590 field containing $a UCLA Library - CDL shared resource """
 	for fld in record.get_fields('590'):
 		# Should be only one $a per 590 field
 		if fld['a'].startswith('UCLA Library - CDL shared resource'):
 			record.remove_field(fld)
 
 def delete_599(record):
-	"""	Delete 599 field where $a is UPD or DEL or NEW, and $c is present """
+	""" Delete 599 field where $a is UPD or DEL or NEW, and $c is present """
 	scp_vals = ['DEL', 'NEW', 'UPD']
 	for fld in record.get_fields('599'):
 		# Should be only one $a per 599 field
@@ -29,12 +29,12 @@ def delete_599(record):
 			record.remove_field(fld)			
 
 def delete_793(record):
-	"""	Delete 793 field regardless of content """
+	""" Delete 793 field regardless of content """
 	for fld in record.get_fields('793'):
 		record.remove_field(fld)
 
 def delete_856(record):
-	"""	Delete 856 field where $x is CDL or UC open access """
+	""" Delete 856 field where $x is CDL or UC open access """
 	scp_vals = ['CDL', 'UC open access']
 	for fld in record.get_fields('856'):
 		# 856 can have multiple $x
@@ -45,7 +45,7 @@ def delete_856(record):
 				break
 
 def modify_856(record):
-	"""	Modify 856 field where $x is CDL or UC open access,
+	""" Modify 856 field where $x is CDL or UC open access,
 		setting 856 $u dummyURL
 	"""
 	scp_vals = ['CDL', 'UC open access']
