@@ -44,7 +44,6 @@ def clean_record(file_name=None, out_file=None):
 		modify_5xx(record)
 		change_CLU(record)
 		delete_752(record)
-		print(record)
 		writer.write(record)
 	writer.close()
 	reader.close()
