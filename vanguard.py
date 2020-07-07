@@ -3,6 +3,16 @@ from pymarc import Record, Field, MARCReader, MARCWriter
 
 #SILSLA-13
 
+def modify_5xx(record):
+	for old_field in range(500, 600):
+		if old_field != 590:
+			for fld in record.get_fields(old_field):
+				for sfld in fld.get_subfields('5'):
+					if sfld.startswith('CLU'):
+						fld.tag = '590'
+						record.add_ordered_field(fld)
+	return record
+
 def change_CLU(record):
 	field_mapping = {
 					'655':'695',
@@ -16,11 +26,8 @@ def change_CLU(record):
 		for fld in record.get_fields(old_field):
 			for sfld in fld.get_subfields('5'):
 				if sfld.startswith('CLU'):
-					value = record[old_field]
-					field = Field(tag = new_field, data=value)
-					record.add_field(field)
-					record.remove_field(fld)
-					
+					fld.tag = new_field
+					record.add_ordered_field(fld)
 	return record
 
 def delete_752(record):
@@ -30,13 +37,14 @@ def delete_752(record):
 				record.remove_field(fld)			
 	return record
 
-def clean_record(file_name):
+def clean_record(file_name=None, out_file=None):
 	reader = MARCReader(open(file_name, 'rb'))
-	writer = MARCWriter(open('new_file.mrc', 'wb'))
+	writer = MARCWriter(open(outfile, 'wb'))
 	for record in reader:
-		#change_5xx_CLU(record)
+		modify_5xx(record)
 		change_CLU(record)
 		delete_752(record)
-	writer.write(record)
+		print(record)
+		writer.write(record)
 	writer.close()
 	reader.close()
