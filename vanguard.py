@@ -32,6 +32,8 @@ def delete_752(record):
 		if fld['5'] != None and fld['5'].startswith('CLU'):
 			record.remove_field(fld)
 
+#SILSLA-14
+
 def delete_956(record):
 	"""Delete all 956 fields"""
 	for fld in record.get_fields('956'):
