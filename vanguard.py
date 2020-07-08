@@ -8,7 +8,6 @@ def get_5xx_fields(field_mapping_dict):
 		if old_field != 590:
 			field_mapping_dict[old_field] = '590'
 
-
 def change_CLU(record):
 	"""Change field when original field's $5 starts with CLU"""
 	field_mapping = {
@@ -42,7 +41,6 @@ for record in reader:
 	change_CLU(record)
 	delete_752(record)
 	writer.write(record)
-	print(record)
 
 writer.close()
 reader.close()
