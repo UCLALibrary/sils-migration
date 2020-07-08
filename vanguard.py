@@ -1,4 +1,5 @@
 import sys
+import copy
 from pymarc import Record, Field, MARCReader, MARCWriter
 
 #SILSLA-13
@@ -29,7 +30,19 @@ def delete_752(record):
 	"""Delete 752 field if it's $5 starts with CLU"""
 	for fld in record.get_fields('752'):
 		if fld['5'] != None and fld['5'].startswith('CLU'):
-			record.remove_field(fld)			
+			record.remove_field(fld)
+
+def delete_956(record):
+	"""Delete all 956 fields"""
+	for fld in record.get_fields('956'):
+		record.remove_field(fld)
+
+def copy_856(record):
+	"""Copy contents of 856 into new 956 field"""
+	for fld in record.get_fields('856'):
+		fld_956 = copy.copy(fld)
+		fld_956.tag = '956'
+		record.add_ordered_field(fld_956)		
 
 if len(sys.argv) != 3:
     raise ValueError(f'Usage: {sys.argv[0]} in_file out_file')
@@ -40,6 +53,8 @@ writer = MARCWriter(open(sys.argv[2], 'wb'))
 for record in reader:	
 	change_CLU(record)
 	delete_752(record)
+	delete_956(record)
+	copy_856(record)
 	writer.write(record)
 
 writer.close()
