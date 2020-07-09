@@ -24,6 +24,12 @@ _get_max_id() {
 # Get voyager environment, for vars and for cron
 . `echo $HOME | sed "s/$LOGNAME/voyager/"`/.profile.local
 
+# Is it safe?
+if [ `hostname` != "t-w-voyager01" ]; then
+  echo "ERROR: This can only run on the test server - exiting"
+  exit 1
+fi
+
 # Enable python3, which is not on by default for voyager user
 source /opt/rh/rh-python38/enable
 
