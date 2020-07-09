@@ -1,3 +1,4 @@
+import os
 import sys
 import copy
 from pymarc import Record, Field, MARCReader, MARCWriter
@@ -65,8 +66,9 @@ def delete_various_9xx(record):
 
 def get_dbcode(filename):
     """Helper function to get dbcode from filename"""
+	basename = os.path.basename(filename)
     for dbcode in ["filmntvdb", "ucladb", "ethnodb"]:
-        if filename.startswith(dbcode):
+        if basename.startswith(dbcode):
             return dbcode
         else:
             raise ValueError(
