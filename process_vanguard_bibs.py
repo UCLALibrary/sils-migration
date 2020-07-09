@@ -136,7 +136,7 @@ def modify_035(record):
     """Modify 035 fields if they do not start with (,ucoclc,oc"""
     for fld in record.get_fields("035"):
         if (
-            fld["a"]!=None and not fld["a"].startswith('(') and not
+            fld["a"]!= None and not fld["a"].startswith('(') and not
             fld["a"].startswith('ucoclc') and not fld["a"].startswith('oc')
            ):
             fld["a"] = '{}{}'.format("(local)", copy.copy(fld["a"]))

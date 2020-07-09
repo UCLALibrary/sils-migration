@@ -12,11 +12,9 @@ def delete_966(record):
 def move_901(record):
     """Move 901 field to 966"""
     for fld in record.get_fields("901"):
-        print(record)
         fld.tag = "966"
         record.remove_field(fld)
         record.add_ordered_field(fld)
-        print(record)
 
 def do_SILSLA_15_mfhd(record):
     delete_966(record)
