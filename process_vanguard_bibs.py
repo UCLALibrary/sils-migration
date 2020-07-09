@@ -109,12 +109,13 @@ def do_SILSLA_15_bib(record, dbcode):
 #SILSLA-16
 
 def delete_035_subfield(record):
+    """Delete 035 $9 where appropriate"""
     for fld in record.get_fields("035"):
         if fld["9"] != None and fld["9"] == 'ExL' and fld["a"] != None:
             fld.delete_subfield("9")
 
 def delete_035(record):
-    """Delete 035 field"""
+    """Delete 035 field where appropriate"""
     for fld in record.get_fields("035"):
         if fld["9"] != None and fld["9"] == 'ExL' and fld["a"] == None:
             record.remove_field(fld)
