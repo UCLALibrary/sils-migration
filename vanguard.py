@@ -73,9 +73,8 @@ def get_dbcode(filename):
                 f"Usage: {filename} filename must include originating dbcode"
             )
 
-def copy_001(record, filename):
+def copy_001(record, dbcode):
     """Copy 001 field, append dbcode, and add as $a to 996"""
-    dbcode = get_dbcode(filename)
     for fld in record.get_fields("001"):
         voyager_code = "{}-{}".format(copy.copy(fld.value()), dbcode)
         fld_996 = Field(tag="996", indicators=[' ',' '], subfields=['a', voyager_code])
@@ -98,11 +97,11 @@ def move_939_fatadb(record):
         fld.tag = "969"
         record.add_ordered_field(fld)
 
-def do_SILSLA_15(record, filename):
+def do_SILSLA_15(record, dbcode):
     delete_various_9xx(record)
-    copy_001(record, filename)
+    copy_001(record, dbcode)
     move_9xx(record)
-    
+  
 if len(sys.argv) != 3:
     raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
 
@@ -113,7 +112,7 @@ dbcode = get_dbcode(sys.argv[1])
 for record in reader:
     do_SILSLA_13(record)
     do_SILSLA_14(record)
-    do_SILSLA_15(record, sys.argv[1])
+    do_SILSLA_15(record, dbcode)
     if dbcode == "filmntvdb":
         move_939_fatadb(record)
     writer.write(record)
