@@ -4,12 +4,10 @@ from pymarc import Record, Field, MARCReader, MARCWriter
 
 # SILSLA-13
 
-
 def get_5xx_fields(field_mapping_dict):
     for old_field in range(500, 600):
         if old_field != 590:
             field_mapping_dict[old_field] = "590"
-
 
 def change_CLU(record):
     """Change field when original field's $5 starts with CLU"""
@@ -28,27 +26,22 @@ def change_CLU(record):
                 fld.tag = new_field
                 record.add_ordered_field(fld)
 
-
 def delete_752(record):
     """Delete 752 field if it's $5 starts with CLU"""
     for fld in record.get_fields("752"):
         if fld["5"] != None and fld["5"].startswith("CLU"):
             record.remove_field(fld)
 
-
 def do_SILSLA_13(record):
     change_CLU(record)
     delete_752(record)
 
-
 # SILSLA-14
-
 
 def delete_956(record):
     """Delete all 956 fields"""
     for fld in record.get_fields("956"):
         record.remove_field(fld)
-
 
 def copy_856(record):
     """Copy contents of 856 into new 956 field"""
@@ -57,14 +50,11 @@ def copy_856(record):
         fld_956.tag = "956"
         record.add_ordered_field(fld_956)
 
-
 def do_SILSLA_14(record):
     delete_956(record)
     copy_856(record)
 
-
 # SILSLA-15
-
 
 def delete_various_9xx(record):
     """Delete various 9xx fields"""
@@ -72,7 +62,6 @@ def delete_various_9xx(record):
         "996", "966", "951", "916", "920", "992", "962", "949"
     ):
         record.remove_field(fld)
-
 
 def get_dbcode(filename):
     """Helper function to get dbcode from filename"""
@@ -84,7 +73,6 @@ def get_dbcode(filename):
                 f"Usage: {sys.argv[1]} filename must include originating dbcode"
             )
 
-
 def copy_001(record, filename):
     """Copy 001 field, append dbcode, and add as $a to 996"""
     dbcode = get_dbcode(filename)
@@ -92,7 +80,6 @@ def copy_001(record, filename):
         voyager_code = "{}-{}".format(copy.copy(fld.value()), dbcode)
         fld_996 = Field(tag="996", indicators=[' ',' '], subfields=['a', voyager_code])
         record.add_ordered_field(fld_996)
-
 
 def move_9xx(record):
     """Move various 9xx fields"""
@@ -102,7 +89,6 @@ def move_9xx(record):
         for fld in record.get_fields(old_field):
             fld.tag = new_field
             record.add_ordered_field(fld)
-
 
 def move_939_fatadb(record, filename):
     """For FATADB records, remove 969 field and move 939 to 969"""
@@ -114,13 +100,11 @@ def move_939_fatadb(record, filename):
             fld.tag = "969"
             record.add_ordered_field(fld)
 
-
 def do_SILSLA_15(record, filename):
     delete_various_9xx(record)
     copy_001(record, filename)
     move_9xx(record)
     move_939_fatadb(record, filename)
-
 
 if len(sys.argv) != 3:
     raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
