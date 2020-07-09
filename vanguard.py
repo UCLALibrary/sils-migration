@@ -70,7 +70,7 @@ def get_dbcode(filename):
             return dbcode
         else:
             raise ValueError(
-                f"Usage: {sys.argv[1]} filename must include originating dbcode"
+                f"Usage: {filename} filename must include originating dbcode"
             )
 
 def copy_001(record, filename):
@@ -90,32 +90,32 @@ def move_9xx(record):
             fld.tag = new_field
             record.add_ordered_field(fld)
 
-def move_939_fatadb(record, filename):
+def move_939_fatadb(record):
     """For FATADB records, remove 969 field and move 939 to 969"""
-    dbcode = get_dbcode(filename)
-    if dbcode == "filmntvdb":
-        for old_fld in record.get_fields("969"):
-            record.remove_field(old_fld)
-        for fld in record.get_fields("939"):
-            fld.tag = "969"
-            record.add_ordered_field(fld)
+    for old_fld in record.get_fields("969"):
+        record.remove_field(old_fld)
+    for fld in record.get_fields("939"):
+        fld.tag = "969"
+        record.add_ordered_field(fld)
 
 def do_SILSLA_15(record, filename):
     delete_various_9xx(record)
     copy_001(record, filename)
     move_9xx(record)
-    move_939_fatadb(record, filename)
-
+    
 if len(sys.argv) != 3:
     raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
 
 reader = MARCReader(open(sys.argv[1], "rb"))
 writer = MARCWriter(open(sys.argv[2], "wb"))
+dbcode = get_dbcode(sys.argv[1])
 
 for record in reader:
     do_SILSLA_13(record)
     do_SILSLA_14(record)
     do_SILSLA_15(record, sys.argv[1])
+    if dbcode == "filmntvdb":
+        move_939_fatadb(record)
     writer.write(record)
 
 writer.close()
