@@ -89,6 +89,7 @@ def move_9xx(record):
         new_field = field_mapping[old_field]
         for fld in record.get_fields(old_field):
             fld.tag = new_field
+            record.remove_field(fld)
             record.add_ordered_field(fld)
 
 def move_939_fatadb(record):
@@ -97,12 +98,53 @@ def move_939_fatadb(record):
         record.remove_field(old_fld)
     for fld in record.get_fields("939"):
         fld.tag = "969"
+        record.remove_field(fld)
         record.add_ordered_field(fld)
 
 def do_SILSLA_15_bib(record, dbcode):
     delete_various_9xx(record)
     copy_001(record, dbcode)
     move_9xx(record)
+
+#SILSLA-16
+
+def delete_035_subfield(record):
+    for fld in record.get_fields("035"):
+        if fld["9"] != None and fld["9"] == 'ExL' and fld["a"] != None:
+            fld.delete_subfield("9")
+
+def delete_035(record):
+    """Delete 035 field"""
+    for fld in record.get_fields("035"):
+        if fld["9"] != None and fld["9"] == 'ExL' and fld["a"] == None:
+            record.remove_field(fld)
+
+def move_035(record):
+    """Move value of 035 $9 to 992 $c"""
+    for fld in record.get_fields("035"):
+        if fld["9"] != None and fld["9"] != 'ExL':
+            sfld = copy.copy(fld["9"])
+            fld.delete_subfield("9")
+            fld_992 = Field(tag="992", indicators=[' ',' '], subfields=['c', sfld])
+            record.add_ordered_field(fld_992)
+        #only deleting $9 leaves some empty 035 fields
+        if fld.value() == '':
+            record.remove_field(fld)
+
+def modify_035(record):
+    """Modify 035 fields if they do not start with (,ucoclc,oc"""
+    for fld in record.get_fields("035"):
+        if (
+            fld["a"]!=None and not fld["a"].startswith('(') and not
+            fld["a"].startswith('ucoclc') and not fld["a"].startswith('oc')
+           ):
+            fld["a"] = '{}{}'.format("(local)", copy.copy(fld["a"]))
+ 
+def do_SILSLA_16(record):
+    delete_035_subfield(record)
+    delete_035(record)
+    move_035(record)
+    modify_035(record)
   
 if len(sys.argv) != 3:
     raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
@@ -118,6 +160,7 @@ for record in reader:
     if dbcode == "filmntvdb":
         move_939_fatadb(record)
     writer.write(record)
+    do_SILSLA_16(record)
 
 writer.close()
 reader.close()
