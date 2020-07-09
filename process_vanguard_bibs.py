@@ -66,7 +66,7 @@ def delete_various_9xx(record):
 
 def get_dbcode(filename):
     """Helper function to get dbcode from filename"""
-	basename = os.path.basename(filename)
+    basename = os.path.basename(filename)
     for dbcode in ["filmntvdb", "ucladb", "ethnodb"]:
         if basename.startswith(dbcode):
             return dbcode
@@ -99,7 +99,7 @@ def move_939_fatadb(record):
         fld.tag = "969"
         record.add_ordered_field(fld)
 
-def do_SILSLA_15(record, dbcode):
+def do_SILSLA_15_bib(record, dbcode):
     delete_various_9xx(record)
     copy_001(record, dbcode)
     move_9xx(record)
@@ -114,7 +114,7 @@ dbcode = get_dbcode(sys.argv[1])
 for record in reader:
     do_SILSLA_13(record)
     do_SILSLA_14(record)
-    do_SILSLA_15(record, dbcode)
+    do_SILSLA_15_bib(record, dbcode)
     if dbcode == "filmntvdb":
         move_939_fatadb(record)
     writer.write(record)
