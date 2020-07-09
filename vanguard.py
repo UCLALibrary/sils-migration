@@ -90,9 +90,8 @@ def copy_001(record, filename):
     dbcode = get_dbcode(filename)
     for fld in record.get_fields("001"):
         voyager_code = "{}-{}".format(copy.copy(fld.value()), dbcode)
-        fld_996 = Field(tag="996", subfields=["a", voyager_code])
+        fld_996 = Field(tag="996", indicators=[' ',' '], subfields=['a', voyager_code])
         record.add_ordered_field(fld_996)
-        print(record)
 
 
 def move_9xx(record):
