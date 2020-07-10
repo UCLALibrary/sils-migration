@@ -3,17 +3,13 @@ import sys
 import copy
 from pymarc import Record, Field, MARCReader, MARCWriter
 
-
 #SILSLA-17
 
 def modify_suppressed_bibs(record):
 	"""Replace (OCoLC) with (Suppressed) in 035 $a for suppressed records"""
 	for fld in record.get_fields("035"):
 		if fld["a"] is not None and fld["a"].startswith("(OCoLC)"):
-			print(fld)
-			new_sfld_a = (copy.copy(fld["a"])).replace("(OCoLC)", "(Suppressed)")
-			fld["a"] = new_sfld_a
-			print(record)
+			fld["a"] = (fld["a"]).replace("(OCoLC)", "(Suppressed)")
 
 def do_SILSLA_17(record):
 	modify_suppressed_bibs(record)
@@ -26,7 +22,7 @@ writer = MARCWriter(open(sys.argv[2], "wb"))
 
 for record in reader:
 	do_SILSLA_17(record)
-
+	writer.write(record)
 
 writer.close()
 reader.close()
