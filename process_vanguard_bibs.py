@@ -158,8 +158,8 @@ for record in reader:
     do_SILSLA_15_bib(record, dbcode)
     if dbcode == "filmntvdb":
         move_939_fatadb(record)
-    writer.write(record)
     do_SILSLA_16(record)
+    writer.write(record)
 
 writer.close()
 reader.close()
