@@ -1,5 +1,8 @@
+set linesize 10;
+
 -- Spec #3: Hybrid CDL/UCLA bibs WITHOUT open CDL PO
 -- UPDATE bibs, with CDL 856 deletion
+
 with bibs as (
   select distinct
     record_id as bib_id

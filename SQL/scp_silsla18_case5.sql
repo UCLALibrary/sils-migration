@@ -1,5 +1,8 @@
+set linesize 10;
+
 -- Spec #5: Pure CDL bibs, HAS print holdings, no UCLA 856 fields
 -- UPDATE bibs, with CDL 856 deletion, AND delete internet holdings
+
 with bibs as (
   select distinct
     record_id as bib_id
