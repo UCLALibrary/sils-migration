@@ -68,13 +68,14 @@ def delete_various_9xx(record):
 def get_dbcode(filename):
     """Helper function to get dbcode from filename"""
     basename = os.path.basename(filename)
-    for dbcode in ["filmntvdb", "ucladb", "ethnodb"]:
-        if basename.startswith(dbcode):
-            return dbcode
-        else:
-            raise ValueError(
-                f"Usage: {filename} filename must include originating dbcode"
-            )
+    # Assumes caller will name files like ethnodb_bib_..., ucladb_mfhd_... etc.
+    dbcode = basename.split("_")[0]
+    if dbcode in ["filmntvdb", "ucladb", "ethnodb"]:
+        return dbcode
+    else:
+        raise ValueError(
+            f"Usage: {filename} filename must include originating dbcode"
+        )
 
 def copy_001(record, dbcode):
     """Copy 001 field, append dbcode, and add as $a to 996"""
