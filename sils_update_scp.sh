@@ -95,8 +95,3 @@ for SPEC in 1 2 3 4 5; do
   esac
 done
 
-exit 1
-
-
-
-
