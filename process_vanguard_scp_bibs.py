@@ -76,7 +76,7 @@ for record in reader:
 		# Case 4 from specs
 		modify_856(record)
 	else:
-		# Cases 3 and 5 from sepcs
+		# Cases 3 and 5 from specs
 		delete_856(record)
 
 	# Done making changes, save the changed record to file

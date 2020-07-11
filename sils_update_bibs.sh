@@ -52,6 +52,7 @@ for DB in ethnodb; do
   # Code for record type required by the extract program
   case ${TYPE} in
     bib ) VGERTYPE=B;;
+    *   ) echo "ERROR: Invalid type ${TYPE} - exiting"; exit 1;;
   esac
 
   # Set MAXID (largest id in table) with get_max_id function

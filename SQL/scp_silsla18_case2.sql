@@ -1,5 +1,8 @@
+set linesize 10;
+
 -- Spec #2: Pure CDL bibs, no print holdings, no UCLA 856 fields, WITH PO
 -- DELETE bibs and holdings for Vanguard.
+
 with bibs as (
   select distinct
     record_id as bib_id
