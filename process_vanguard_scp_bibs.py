@@ -50,7 +50,6 @@ def modify_856(record):
 	"""
 	scp_vals = ['CDL', 'UC open access']
 	for fld in record.get_fields('856'):
-		print(f'Checking {fld}')
 		# 856 can have multiple $x
 		for sfld in fld.get_subfields('x'):
 			if sfld in scp_vals:

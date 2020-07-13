@@ -81,16 +81,13 @@ for SPEC in 1 2 3 4 5; do
 	    fi
 
 	    # Process the records via python program
-	    # TODO: Remove echo
-	    echo python3 ${DIR}/scp_bib_update.py ${EXTRACT_FILE} ${UPDATE_FILE} ${HAS_PO}
+	    python3 ${DIR}/process_vanguard_scp_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE} ${HAS_PO}
 
 	    # Load the updated records back into Voyager, using the GDC bib import profile
-	    # TODO: Remove echo
-	    echo ${VGER_SCRIPT}/vger_bulkimport_file_NOKEY ${UPDATE_FILE} ${DB} GDC_B_AU
+	    ${VGER_SCRIPT}/vger_bulkimport_file_NOKEY ${UPDATE_FILE} ${DB} GDC_B_AU
 
 	    # Clean up
-	    # TODO: Remove echo
-	    echo rm ${EXTRACT_FILE} ${UPDATE_FILE}
+	    rm ${EXTRACT_FILE} ${UPDATE_FILE} ${ID_FILE}
         ;;
   esac
 done
