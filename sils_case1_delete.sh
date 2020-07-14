@@ -1,8 +1,30 @@
 #!/bin/bash
 
-### WIP ###
+###############################################################
+# Function to allow only N jobs to run at once #####
+# Credit: https://stackoverflow.com/a/33048123
+job_limit () {
+    # Test for single positive integer input
+    if (( $# == 1 )) && [[ $1 =~ ^[1-9][0-9]*$ ]]
+    then
+        # Check number of running jobs
+        joblist=($(jobs -rp))
+        while (( ${#joblist[*]} >= $1 ))
+        do
+            # Wait for any job to finish
+            command='wait '${joblist[0]}
+            for job in ${joblist[@]:1}
+            do
+                command+=' || wait '$job
+            done
+            eval $command
+            joblist=($(jobs -rp))
+        done
+   fi
+}
+###############################################################
 
-
+### Main script starts here ###
 
 # Get voyager environment, for vars and for cron
 . `echo $HOME | sed "s/$LOGNAME/voyager/"`/.profile.local
@@ -29,26 +51,38 @@ fi
 ALL_ID_FILE=${OUT_DIR}/scp_silsla18_case1.sql.out
 wc -l ${ALL_ID_FILE}
 
-# Split into 20 files with roughly equal number of lines
-# with suffixes of 01...20
+# Split into 1000 files with roughly equal number of lines
+# with suffixes of 000..999
 FILE_BASE=scp_case1_ids
-split --numeric-suffixes=1 --number=l/20 ${ALL_ID_FILE} ${OUT_DIR}/${FILE_BASE}.
+split --numeric-suffixes --number=l/1000 ${ALL_ID_FILE} ${OUT_DIR}/${FILE_BASE}.
 
 BASE=/m1/voyager/ucladb
+# For Oracle USERPASS
+source ${BASE}/ini/voyager.env
+
+# Run bulkimport directly rather than via Pbulkimport script, which complicates parallel runs
+BULKIMPORT="/m1/voyager/bin/2010.0.0/bulkimport -d VGER -u ${USERPASS} -c ${BASE}/ini/voyager.ini"
+
 # For each list of ids, export an interleaved file of bib + mfhd, then delete all via bulkimport.
-for ID_FILE in ${OUT_DIR}/${FILE_BASE}.0[1-4]; do
+for SEQ in `seq -w 0 999`; do
+  ID_FILE=${OUT_DIR}/${FILE_BASE}.${SEQ}
   echo "Processing ${ID_FILE}..."
   MARC_FILE=${OUT_DIR}/`basename ${ID_FILE}`.mrc
   ${BASE}/sbin/Pmarcexport -o${MARC_FILE} -rG -mM -t${ID_FILE} -q
 
+  # Extracts are quick; wait 30 seconds before starting the import, to reduce clumping
+  sleep 30
+
+  # Set a meaningful log name for import
   BULK_NAME=`basename ${MARC_FILE}`.bulk
   # Run bulkimport with -x (del bibs) and -r (del mfhds)
-  ${BASE}/sbin/Pbulkimport -f${MARC_FILE} -iGDC_B_AU -L${BULK_NAME} -x -r -M
+  # Run in background
+  ${BULKIMPORT} -L ${BULK_NAME} -f ${MARC_FILE} -i GDC_B_AU -x -r &
 
-  # TODO: Lots of stuff for running multiples.....
-  # For now, sleep for 60 seconds before starting the next, while testing 4
-  sleep 60
+  # Run no more than 6 imports at once; wait here until a slot opens up
+  job_limit 6
 
   # Clean up
   rm ${ID_FILE} ##### ${MARC_FILE}
 done
+
