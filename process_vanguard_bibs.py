@@ -5,21 +5,21 @@ from pymarc import Record, Field, MARCReader, MARCWriter
 
 # SILSLA-13
 
-def get_5xx_fields(field_mapping_dict):
-    for old_field in range(500, 600):
-        if old_field != 590:
-            field_mapping_dict[old_field] = "590"
-
 def change_CLU(record):
     """Change field when original field's $5 starts with CLU"""
     field_mapping = {
+        "500": "590",
+        "501": "590",
+        "506": "596",
+        "540": "597",
+        "561": "591",
+        "563": "593",
         "655": "695",
         "700": "970",
         "710": "971",
         "730": "973",
         "740": "974",
     }
-    get_5xx_fields(field_mapping)
     for old_field in field_mapping.keys():
         new_field = field_mapping[old_field]
         for fld in record.get_fields(old_field):
@@ -29,7 +29,7 @@ def change_CLU(record):
                 record.add_ordered_field(fld)
 
 def delete_752(record):
-    """Delete 752 field if it's $5 starts with CLU"""
+    """Delete 752 field if its $5 starts with CLU"""
     for fld in record.get_fields("752"):
         if fld["5"] is not None and fld["5"].startswith("CLU"):
             record.remove_field(fld)
@@ -61,7 +61,7 @@ def do_SILSLA_14(record):
 def delete_various_9xx(record):
     """Delete various 9xx fields"""
     for fld in record.get_fields(
-        "996", "966", "951", "916", "920", "992", "962", "949"
+        "996", "966", "951", "920", "992", "962", "949", "960", "961", "964", "987", "990"
     ):
         record.remove_field(fld)
 
@@ -86,7 +86,7 @@ def copy_001(record, dbcode):
 
 def move_9xx(record):
     """Move various 9xx fields"""
-    field_mapping = {"901": "966", "910": "951", "935": "992", "948": "962"}
+    field_mapping = {"901": "966", "910": "951", "916": "964", "935": "992", "948": "962"}
     for old_field in field_mapping.keys():
         new_field = field_mapping[old_field]
         for fld in record.get_fields(old_field):
@@ -95,11 +95,11 @@ def move_9xx(record):
             record.add_ordered_field(fld)
 
 def move_939_fatadb(record):
-    """For FATADB records, remove 969 field and move 939 to 969"""
-    for old_fld in record.get_fields("969"):
+    """For FATADB records, remove 963 field and move 939 to 963"""
+    for old_fld in record.get_fields("963"):
         record.remove_field(old_fld)
     for fld in record.get_fields("939"):
-        fld.tag = "969"
+        fld.tag = "963"
         record.remove_field(fld)
         record.add_ordered_field(fld)
 
