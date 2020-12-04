@@ -83,6 +83,11 @@ for SEQ in `seq -w 0 999`; do
   job_limit 6
 
   # Clean up
-  rm ${ID_FILE} ##### ${MARC_FILE}
+  rm ${ID_FILE}
+  # These can't be deleted here as bulkimport is using them in the background
+  ##### rm ${MARC_FILE} ${RPT}/*.scp_case1_ids.${SEQ}.mrc.bulk
+  # OK to remove cumulative files of deleted records, which slow down performance as they grow
+  rm ${RPT}/deleted.bib.marc ${RPT}/deleted.mfhd.marc
+
 done
 

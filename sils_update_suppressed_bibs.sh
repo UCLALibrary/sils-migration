@@ -77,11 +77,9 @@ for DB in ethnodb filmntvdb ucladb; do
   python3 ${DIR}/process_vanguard_suppressed_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE}
 
   # Load the updated records back into Voyager
-  # TODO: Remove echo
-  echo "${VGER_SCRIPT}/vger_bulkimport_file_NOKEY ${UPDATE_FILE} ${DB} GDC_B_AU"
+  ${VGER_SCRIPT}/vger_bulkimport_file_NOKEY ${UPDATE_FILE} ${DB} GDC_B_AU
 
   # Clean up
-  # TODO: Remove echo
-  echo rm ${EXTRACT_FILE} ${UPDATE_FILE} ${SQL_FILE} ${ID_FILE}
+  rm ${EXTRACT_FILE} ${UPDATE_FILE} ${SQL_FILE} ${ID_FILE}
 
 done # DB

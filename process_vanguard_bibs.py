@@ -144,7 +144,8 @@ def do_SILSLA_16(record):
     delete_035_subfield(record)
     delete_035(record)
     move_035(record)
-    modify_035(record)
+    # SILSLA-46: Not modifying 035 with (local) for Test load
+    ### modify_035(record)
   
 if len(sys.argv) != 3:
     raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
