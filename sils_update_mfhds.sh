@@ -32,8 +32,7 @@ fi
 
 # Only holdings records, for multiple databases
 TYPE=mfhd
-#for DB in ethnodb filmntvdb ucladb; do
-for DB in ethnodb; do
+for DB in ethnodb filmntvdb ucladb; do
   # DB-specific directories for extract program and logs
   DB_DIR=/m1/voyager/${DB}
 
