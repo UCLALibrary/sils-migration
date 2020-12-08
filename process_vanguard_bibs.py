@@ -121,6 +121,9 @@ def delete_035(record):
     for fld in record.get_fields("035"):
         if fld["9"] is not None and fld["9"] == 'ExL' and fld["a"] is None:
             record.remove_field(fld)
+        # SILSLA-53: Delete OCLC 035 if it only has $z
+        if fld["z"] is not None and fld["z"].startswith('(OCoLC)') and fld["a"] is None:
+            record.remove_field(fld)
 
 def move_035(record):
     """Move value of 035 $9 to 992 $c"""
@@ -146,7 +149,7 @@ def do_SILSLA_16(record):
     move_035(record)
     # SILSLA-46: Not modifying 035 with (local) for Test load
     ### modify_035(record)
-  
+
 if len(sys.argv) != 3:
     raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
 
