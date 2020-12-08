@@ -1,3 +1,7 @@
+*.log
 *.mrc
 *.txt
 *.out
+
+# Archive of logs
+archive
