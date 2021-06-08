@@ -43,7 +43,7 @@ DIR=/m1/voyager/ucladb/local/sils_migration
 cd ${DIR}
 
 # Put large files in /tmp
-OUT_DIR=/tmp/vanguard
+OUT_DIR=/tmp/alma_migration
 if [ ! -d ${OUT_DIR} ]; then
   mkdir ${OUT_DIR}
 fi

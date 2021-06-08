@@ -61,7 +61,7 @@ source /opt/rh/rh-python38/enable
 DIR=/m1/voyager/ucladb/local/sils_migration
 
 # Put large files in /tmp
-OUT_DIR=/tmp/vanguard
+OUT_DIR=/tmp/alma_migration
 if [ ! -d ${OUT_DIR} ]; then
   mkdir ${OUT_DIR}
 fi
@@ -116,7 +116,7 @@ for DB in ucladb; do
 	fi
 
 	# Process the records via python program
-	python3 ${DIR}/process_vanguard_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE}
+	python3 ${DIR}/process_general_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE}
 
     # Above steps are quick, import below is slow; stagger imports to reduce clumping
     ###sleep 15

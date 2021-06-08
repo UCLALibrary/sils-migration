@@ -25,7 +25,7 @@ source /opt/rh/rh-python38/enable
 DIR=/m1/voyager/ucladb/local/sils_migration
 
 # Put large files in /tmp
-OUT_DIR=/tmp/vanguard
+OUT_DIR=/tmp/alma_migration
 if [ ! -d ${OUT_DIR} ]; then
   mkdir ${OUT_DIR}
 fi
@@ -74,7 +74,7 @@ for DB in ethnodb filmntvdb ucladb; do
   fi
 
   # Process the records via python program
-  python3 ${DIR}/process_vanguard_suppressed_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE}
+  python3 ${DIR}/process_general_suppressed_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE}
 
   # Load the updated records back into Voyager
   ${VGER_SCRIPT}/vger_bulkimport_file_NOKEY ${UPDATE_FILE} ${DB} GDC_B_AU
