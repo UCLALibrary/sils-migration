@@ -44,7 +44,7 @@ esac
 # Run several SQL files, each covering a different scenario with different specs.
 # Each spec needs separate/different handling.
 for SPEC in 1 2 3 4 5; do
-  SQL_FILE=SQL/scp_silsla18_case${SPEC}.sql
+  SQL_FILE=SQL/scp_case${SPEC}.sql
   # Run the query to get the record ids; data will be in SQL_FILE.out in the same directory as SQL_FILE.
   ${VGER_SCRIPT}/vger_sqlplus_run ucla_preaddb ${SQL_FILE}
   ID_FILE=${OUT_DIR}/`basename ${SQL_FILE}.out`

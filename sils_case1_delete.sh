@@ -48,7 +48,7 @@ if [ ! -d ${OUT_DIR} ]; then
   mkdir ${OUT_DIR}
 fi
 
-ALL_ID_FILE=${OUT_DIR}/scp_silsla18_case1.sql.out
+ALL_ID_FILE=${OUT_DIR}/scp_case1.sql.out
 wc -l ${ALL_ID_FILE}
 
 # Split into 1000 files with roughly equal number of lines
