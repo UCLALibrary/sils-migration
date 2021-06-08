@@ -3,7 +3,7 @@
 # Extracts SCP records from the UCLA db only,
 # calls appropriate cleanup programs for each file,
 # and loads updated records back into the relevant database.
-# SILSLA-20
+# SILSLA-88
 
 ##### Main routine starts here #####
 
@@ -29,7 +29,7 @@ if [ ! -d ${OUT_DIR} ]; then
   mkdir ${OUT_DIR}
 fi
 
-# Only bib records, for multiple databases
+# Only bib records, only UCLA database
 TYPE=bib
 DB=ucladb
 # DB-specific directories for extract program and logs
@@ -91,4 +91,3 @@ for SPEC in 1 2 3 4 5; do
         ;;
   esac
 done
-
