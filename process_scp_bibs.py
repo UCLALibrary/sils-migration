@@ -25,9 +25,9 @@ def modify_035(record):
         # Old-school loop over fld.subfields, getting 2 values (code,val) at a time;
         # change relevant subfields.
         for i in range(0, len(fld.subfields), 2):
-            code, val = fld.subfields[i], fld.subfields[i+1]
-            if val.startswith('(OCoLC)'):
-                fld.subfields[i+1] = val.replace('(OCoLC)', '(SCP-OCoLC)')
+        	code, val = fld.subfields[i], fld.subfields[i+1]
+        	if val.startswith('(OCoLC)'):
+        		fld.subfields[i+1] = val.replace('(OCoLC)', '(SCP-OCoLC)')
 
 def delete_590(record):
 	""" Delete 590 field containing $a UCLA Library - CDL shared resource """
