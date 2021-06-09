@@ -39,9 +39,11 @@ writer = MARCWriter(open(sys.argv[2], 'wb'))
 for record in reader:
 	# Update 035, only if 008/23 = o
 	# Don't make me iterate through non-repeatable fields...
-	format = record.get_fields('008')[0].value()[23:24]
-	if format == 'o':
-		modify_035(record)
+	f008 = record.get_fields('008')
+	if f008:
+		format = f008[0].value()[23:24]
+		if format == 'o':
+			modify_035(record)
 	
 	delete_856(record)
 
