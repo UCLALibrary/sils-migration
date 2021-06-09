@@ -3,7 +3,7 @@
 # Extracts MARCIVE records from the UCLA db only,
 # calls appropriate cleanup programs for each file,
 # and loads updated records back into the relevant database.
-# SILSLA-48
+# SILSLA-91
 
 ##### Main routine starts here #####
 
@@ -29,7 +29,7 @@ if [ ! -d ${OUT_DIR} ]; then
   mkdir ${OUT_DIR}
 fi
 
-# Only bib records, for multiple databases
+# Only bib records, for main UCLA db only
 TYPE=bib
 DB=ucladb
 # DB-specific directories for extract program and logs
@@ -54,7 +54,7 @@ for SPEC in 1 2; do
   # Handle each list of ids differently.
   # Some lists may not be handled within this script (e.g., load into GDC and run a job there).
   case ${SPEC} in
-    1 ) echo "##### TODO: HANDLE ${ID_FILE} - delete all #####"
+    1 ) echo "##### CASE 1: Run sils_delete_marcive_case1.sh #####"
         ;;
     2 ) echo "##### CASE 2: Updating bib records; TODO: Handle holdings for ${ID_FILE} #####"
         EXTRACT_FILE=${OUT_DIR}/marcive_case${SPEC}_${DB}_${TYPE}.mrc
