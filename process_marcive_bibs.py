@@ -28,7 +28,7 @@ def modify_035(record):
 def delete_856(record):
 	""" Delete 856 field regardless of content """
 	for fld in record.get_fields('856'):
-		record.remove_field(fld)
+		remove_field_safe(record, fld)
 
 ### Main code starts here ###
 if len(sys.argv) != 3:
