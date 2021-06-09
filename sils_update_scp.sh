@@ -54,7 +54,7 @@ for SPEC in 1 2 3 4 5; do
   # Handle each list of ids differently.
   # Some lists may not be handled within this script (e.g., load into GDC and run a job there).
   case ${SPEC} in
-    1 ) echo "##### Load ${ID_FILE} into GDC and run a DELETE ALL job #####"
+    1 ) echo "##### CASE 1: Run sils_delete_scp_case1.sh #####"
         ;;
     2 ) echo "##### Load ${ID_FILE} into GDC and run a SUPPRESS ALL job #####"
         ;;
