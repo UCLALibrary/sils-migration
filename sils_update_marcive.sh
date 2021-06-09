@@ -55,6 +55,7 @@ for SPEC in 1 2; do
   # Some lists may not be handled within this script (e.g., load into GDC and run a job there).
   case ${SPEC} in
     1 ) echo "##### CASE 1: Run sils_delete_marcive_case1.sh #####"
+        echo "##### COPY CASE 1 ID FILE FIRST, FOR OCLC# REPORTING #####"
         ;;
     2 ) echo "##### CASE 2: Updating bib records; TODO: Handle holdings for ${ID_FILE} #####"
         EXTRACT_FILE=${OUT_DIR}/marcive_case${SPEC}_${DB}_${TYPE}.mrc
