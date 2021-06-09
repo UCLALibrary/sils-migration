@@ -17,17 +17,17 @@ def modify_035(record):
 	""" Change 035 prefix from (OCoLC) to (SCP-OCoLC) """
 	for fld in record.get_fields('035'):
 		# Prefix should only be in $a, for these records
-        # 035 should not have multiple $a... but some records do
-        # Subfield iteration and manipulation in pymarc is ... not good.
-        # fld.get_subfields('a') returns only values
-        # fld.subfields returns a list
-        # with code,value,code,value etc. - not a list of tuples....
-        # Old-school loop over fld.subfields, getting 2 values (code,val) at a time;
-        # change relevant subfields.
-        for i in range(0, len(fld.subfields), 2):
-        	code, val = fld.subfields[i], fld.subfields[i+1]
-        	if val.startswith('(OCoLC)'):
-        		fld.subfields[i+1] = val.replace('(OCoLC)', '(SCP-OCoLC)')
+		# 035 should not have multiple $a... but some records do
+		# Subfield iteration and manipulation in pymarc is ... not good.
+		# fld.get_subfields('a') returns only values
+		# fld.subfields returns a list
+		# with code,value,code,value etc. - not a list of tuples....
+		# Old-school loop over fld.subfields, getting 2 values (code,val) at a time;
+		# change relevant subfields.
+		for i in range(0, len(fld.subfields), 2):
+			code, val = fld.subfields[i], fld.subfields[i+1]
+			if val.startswith('(OCoLC)'):
+				fld.subfields[i+1] = val.replace('(OCoLC)', '(SCP-OCoLC)')
 
 def delete_590(record):
 	""" Delete 590 field containing $a UCLA Library - CDL shared resource """
@@ -76,7 +76,7 @@ def modify_856(record):
 
 ### Main code starts here ###
 if len(sys.argv) != 4:
-    raise ValueError(f'Usage: {sys.argv[0]} in_file out_file has_po_(Y/N)')
+	raise ValueError(f'Usage: {sys.argv[0]} in_file out_file has_po_(Y/N)')
 reader = MARCReader(open(sys.argv[1], 'rb'))
 writer = MARCWriter(open(sys.argv[2], 'wb'))
 has_po = sys.argv[3]
@@ -96,7 +96,7 @@ for record in reader:
 
 	# Done making changes, save the changed record to file
 	writer.write(record)
-    	
+		
 # Cleanup
 writer.close()
 reader.close()
