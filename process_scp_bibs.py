@@ -86,7 +86,6 @@ if case_no not in ['3', '4', '5']:
 	raise ValueError(f'Invalid value {case_no}; must be 3, 4, or 5')
 
 for record in reader:
-	modify_035(record)
 	delete_590(record)
 	delete_599(record)
 	delete_793(record)
