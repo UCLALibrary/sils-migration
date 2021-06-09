@@ -13,6 +13,7 @@ Parameters:
 """
 import sys
 from pymarc import MARCReader, MARCWriter
+from pymarc_extensions import move_field_safe, remove_field_safe
 
 def modify_035(record):
 	""" Change 035 prefix from (OCoLC) to (SCP-OCoLC) """
@@ -35,7 +36,7 @@ def delete_590(record):
 	for fld in record.get_fields('590'):
 		# Should be only one $a per 590 field
 		if fld['a'].startswith('UCLA Library - CDL shared resource'):
-			record.remove_field(fld)
+			remove_field_safe(record, fld)
 
 def delete_599(record):
 	""" Delete 599 field where $a is UPD or DEL or NEW, and $c is present """
@@ -43,12 +44,12 @@ def delete_599(record):
 	for fld in record.get_fields('599'):
 		# Should be only one $a per 599 field
 		if (fld['a'] in scp_vals) and (fld['c'] is not None):
-			record.remove_field(fld)			
+			remove_field_safe(record, fld)
 
 def delete_793(record):
 	""" Delete 793 field regardless of content """
 	for fld in record.get_fields('793'):
-		record.remove_field(fld)
+		remove_field_safe(record, fld)
 
 def delete_856(record):
 	""" Delete 856 field where $x is CDL or UC open access """
@@ -57,7 +58,7 @@ def delete_856(record):
 		# 856 can have multiple $x
 		for sfld in fld.get_subfields('x'):
 			if sfld in scp_vals:
-				record.remove_field(fld)
+				remove_field_safe(record, fld)
 				# If fld was deleted, break out of the sfld loop
 				break
 
