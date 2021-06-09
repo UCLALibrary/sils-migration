@@ -84,6 +84,7 @@ if has_po not in ['Y', 'N']:
 	raise ValueError(f'Invalid value {has_po}; must be Y or N')
 
 for record in reader:
+	modify_035(record)
 	delete_590(record)
 	delete_599(record)
 	delete_793(record)
