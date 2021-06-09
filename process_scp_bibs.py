@@ -1,14 +1,15 @@
 """
 Implements MARC manipulations from sections 3-5 of SILSLA-18.
 The program:
+* Modifies OCLC 035 fields, based on case_no parameter
 * Deletes relevant 590 field(s)
 * Deletes relevant 599 field(s)
 * Deletes all 793 fields
-* Deletes or modifies SCP 856 fields, based on has_po parameter
+* Deletes or modifies SCP 856 fields, based on case_no parameter
 Parameters:
 * in_file: input file of MARC records
 * out_file: output file of updated MARC records
-* has_po_(Y/N): Y/N flag, whether records have a linked PO.
+* case_no: the case number (3, 4, 5) from the specs
 """
 import sys
 from pymarc import MARCReader, MARCWriter
@@ -76,23 +77,25 @@ def modify_856(record):
 
 ### Main code starts here ###
 if len(sys.argv) != 4:
-	raise ValueError(f'Usage: {sys.argv[0]} in_file out_file has_po_(Y/N)')
+	raise ValueError(f'Usage: {sys.argv[0]} in_file out_file case# (3-5)')
 reader = MARCReader(open(sys.argv[1], 'rb'))
 writer = MARCWriter(open(sys.argv[2], 'wb'))
-has_po = sys.argv[3]
-if has_po not in ['Y', 'N']:
-	raise ValueError(f'Invalid value {has_po}; must be Y or N')
+case_no = sys.argv[3]
+if case_no not in ['3', '4', '5']:
+	raise ValueError(f'Invalid value {case_no}; must be 3, 4, or 5')
 
 for record in reader:
 	modify_035(record)
 	delete_590(record)
 	delete_599(record)
 	delete_793(record)
-	if has_po == 'Y':
-		# Case 4 from specs
+	if case_no == '3':
+		modify_035(record)
+		delete_856(record)
+	elif case_no == '4':
+		modify_035(record)
 		modify_856(record)
-	else:
-		# Cases 3 and 5 from specs
+	else: #5
 		delete_856(record)
 
 	# Done making changes, save the changed record to file
