@@ -58,12 +58,7 @@ for SPEC in 1 2 3 4 5; do
         ;;
     2 ) echo "##### Load ${ID_FILE} into GDC and run a SUPPRESS ALL job #####"
         ;;
-3|4|5 ) # Handle these cases the same, except for HAS_PO parameter
-        if [ ${SPEC} -eq 4 ]; then
-          HAS_PO=Y
-        else
-          HAS_PO=N
-        fi
+3|4|5 ) # Handle these cases the same, except process_scp_bibs.py varies based on case
 
 	    EXTRACT_FILE=${OUT_DIR}/scp_case${SPEC}_${DB}_${TYPE}.mrc
     	UPDATE_FILE=${OUT_DIR}/`basename ${EXTRACT_FILE} .mrc`.out
@@ -81,13 +76,13 @@ for SPEC in 1 2 3 4 5; do
 	    fi
 
 	    # Process the records via python program
-	    python3 ${DIR}/process_scp_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE} ${HAS_PO}
+	    python3 ${DIR}/process_scp_bibs.py ${EXTRACT_FILE} ${UPDATE_FILE} ${SPEC}
 
 	    # Load the updated records back into Voyager, using the GDC bib import profile
 	    ${VGER_SCRIPT}/vger_bulkimport_file_NOKEY ${UPDATE_FILE} ${DB} GDC_B_AU
 
 	    # Clean up
-	    rm ${EXTRACT_FILE} ${UPDATE_FILE} ${ID_FILE}
+	    rm ${EXTRACT_FILE} ${UPDATE_FILE} ### ${ID_FILE}
         ;;
   esac
 done
