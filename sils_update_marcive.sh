@@ -80,7 +80,7 @@ for SPEC in 1 2; do
         ${VGER_SCRIPT}/vger_bulkimport_file_NOKEY ${UPDATE_FILE} ${DB} GDC_B_AU
 
         # Clean up
-        rm ${EXTRACT_FILE} ${UPDATE_FILE} ${ID_FILE}
+        rm ${EXTRACT_FILE} ${UPDATE_FILE} ### ${ID_FILE}
         ;;
 
   esac
