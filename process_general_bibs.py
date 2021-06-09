@@ -2,6 +2,7 @@ import os
 import sys
 import copy
 from pymarc import Record, Field, MARCReader, MARCWriter
+from pymarc_extensions import move_field_safe, remove_field_safe
 
 # SILSLA-13
 
@@ -20,19 +21,17 @@ def change_CLU(record):
         "730": "973",
         "740": "974",
     }
-    for old_field in field_mapping.keys():
-        new_field = field_mapping[old_field]
-        for fld in record.get_fields(old_field):
+    for old_tag in field_mapping.keys():
+        new_tag = field_mapping[old_tag]
+        for fld in record.get_fields(old_tag):
             if fld["5"] is not None and fld["5"].startswith("CLU"):
-                fld.tag = new_field
-                record.remove_field(fld)
-                record.add_ordered_field(fld)
+                move_field_safe(record, fld, new_tag)
 
 def delete_752(record):
     """Delete 752 field if its $5 starts with CLU"""
     for fld in record.get_fields("752"):
         if fld["5"] is not None and fld["5"].startswith("CLU"):
-            record.remove_field(fld)
+            remove_field_safe(record, fld)
 
 def do_SILSLA_13(record):
     change_CLU(record)
@@ -43,7 +42,7 @@ def do_SILSLA_13(record):
 def delete_956(record):
     """Delete all 956 fields"""
     for fld in record.get_fields("956"):
-        record.remove_field(fld)
+        remove_field_safe(record, fld)
 
 def copy_856(record):
     """Copy contents of 856 into new 956 field"""
@@ -63,7 +62,7 @@ def delete_various_9xx(record):
     for fld in record.get_fields(
         "996", "966", "951", "920", "992", "962", "949", "960", "961", "964", "987", "990"
     ):
-        record.remove_field(fld)
+        remove_field_safe(record, fld)
 
 def get_dbcode(filename):
     """Helper function to get dbcode from filename"""
@@ -87,21 +86,18 @@ def copy_001(record, dbcode):
 def move_9xx(record):
     """Move various 9xx fields"""
     field_mapping = {"901": "966", "910": "951", "916": "964", "935": "992", "948": "962"}
-    for old_field in field_mapping.keys():
-        new_field = field_mapping[old_field]
-        for fld in record.get_fields(old_field):
-            fld.tag = new_field
-            record.remove_field(fld)
-            record.add_ordered_field(fld)
+    for old_tag in field_mapping.keys():
+        new_tag = field_mapping[old_tag]
+        for fld in record.get_fields(old_tag):
+            move_field_safe(record, fld, new_tag)
 
 def move_939_fatadb(record):
     """For FATADB records, remove 963 field and move 939 to 963"""
     for old_fld in record.get_fields("963"):
-        record.remove_field(old_fld)
+        remove_field_safe(record, old_fld)
     for fld in record.get_fields("939"):
-        fld.tag = "963"
-        record.remove_field(fld)
-        record.add_ordered_field(fld)
+        new_tag = "963"
+        move_field_safe(record, fld, new_tag)
 
 def do_SILSLA_15_bib(record, dbcode):
     delete_various_9xx(record)
@@ -121,9 +117,10 @@ def delete_035(record):
     for fld in record.get_fields("035"):
         if fld["9"] is not None and fld["9"] == 'ExL' and fld["a"] is None:
             record.remove_field(fld)
-        # SILSLA-53: Delete OCLC 035 if it only has $z
+        # SILSLA-85: Delete OCLC 035 if it only has $z
+        # Confirmed already that all $z fields with no $a have no other subflds
         if fld["z"] is not None and fld["z"].startswith('(OCoLC)') and fld["a"] is None:
-            record.remove_field(fld)
+            remove_field_safe(record, fld)
 
 def move_035(record):
     """Move value of 035 $9 to 992 $c"""
