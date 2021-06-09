@@ -8,6 +8,7 @@ Parameters:
 """
 import sys
 from pymarc import MARCReader, MARCWriter
+from pymarc_extensions import move_field_safe, remove_field_safe
 
 def modify_035(record):
 	""" Change 035 prefix from (OCoLC) to (MARCIVE) """
