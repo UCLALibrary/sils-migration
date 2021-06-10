@@ -87,6 +87,19 @@ def copy_001(record, dbcode):
 		fld_996 = Field(tag="996", indicators=[' ',' '], subfields=['a', voyager_code])
 		record.add_ordered_field(fld_996)
 
+def move_6xx(record):
+	"""Move various 6xx fields, which used to be in change_CLU()"""
+	# Functionally the same as move_9xx, but isolating since last-minute change
+	field_mapping = {
+		"692": "696",
+		"693": "697",
+		"699": "695",
+	}
+	for old_tag in field_mapping.keys():
+		new_tag = field_mapping[old_tag]
+		for fld in record.get_fields(old_tag):
+			move_field_safe(record, fld, new_tag)
+
 def move_9xx(record):
 	"""Move various 9xx fields"""
 	field_mapping = {"901": "966", "910": "951", "916": "964", "935": "992", "936": "986", "948": "962"}
@@ -113,6 +126,7 @@ def delete_remaining_low_9xx(record):
 def do_SILSLA_15_bib(record, dbcode):
 	delete_various_9xx(record)
 	copy_001(record, dbcode)
+	move_6xx(record)
 	move_9xx(record)
 	delete_remaining_low_9xx(record)
 
@@ -186,9 +200,9 @@ dbcode = get_dbcode(sys.argv[1])
 for record in reader:
 	do_SILSLA_13(record)
 	do_SILSLA_14(record)
-	do_SILSLA_15_bib(record, dbcode)
 	if dbcode == "filmntvdb":
 		move_939_fatadb(record)
+	do_SILSLA_15_bib(record, dbcode)
 	do_SILSLA_16(record)
 	writer.write(record)
 
