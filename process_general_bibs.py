@@ -179,7 +179,7 @@ def do_SILSLA_16(record):
 if len(sys.argv) != 3:
 	raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
 
-reader = MARCReader(open(sys.argv[1], "rb"))
+reader = MARCReader(open(sys.argv[1], "rb"), utf8_handling="ignore")
 writer = MARCWriter(open(sys.argv[2], "wb"))
 dbcode = get_dbcode(sys.argv[1])
 
