@@ -13,9 +13,13 @@ def change_CLU(record):
 		"501": "590",
 		"506": "596",
 		"540": "597",
+		"541": "594",
 		"561": "591",
 		"563": "593",
-		"655": "695",
+		"655": "694",
+		"692": "696",
+		"693": "697",
+		"699": "695",
 		"700": "970",
 		"710": "971",
 		"730": "973",
@@ -85,7 +89,7 @@ def copy_001(record, dbcode):
 
 def move_9xx(record):
 	"""Move various 9xx fields"""
-	field_mapping = {"901": "966", "910": "951", "916": "964", "935": "992", "948": "962"}
+	field_mapping = {"901": "966", "910": "951", "916": "964", "935": "992", "936": "986", "948": "962"}
 	for old_tag in field_mapping.keys():
 		new_tag = field_mapping[old_tag]
 		for fld in record.get_fields(old_tag):
@@ -99,12 +103,25 @@ def move_939_fatadb(record):
 		new_tag = "963"
 		move_field_safe(record, fld, new_tag)
 
+def delete_remaining_low_9xx(record):
+	"""After all the 9xx moves and deletes above, remove remaining 900-949"""
+	for tag in range(900, 950):
+		# get_fields() requires string argument
+		for fld in record.get_fields(str(tag)):
+			remove_field_safe(record, fld)
+
 def do_SILSLA_15_bib(record, dbcode):
 	delete_various_9xx(record)
 	copy_001(record, dbcode)
 	move_9xx(record)
+	delete_remaining_low_9xx(record)
 
 #SILSLA-16
+
+def delete_019(record):
+	"""Delete all 019 fields"""
+	for fld in record.get_fields("019"):
+		remove_field_safe(record, fld)
 
 def delete_035_subfield(record):
 	"""Delete 035 $9 where appropriate"""
@@ -116,11 +133,30 @@ def delete_035(record):
 	"""Delete 035 field where appropriate"""
 	for fld in record.get_fields("035"):
 		if fld["9"] is not None and fld["9"] == 'ExL' and fld["a"] is None:
-			record.remove_field(fld)
+			remove_field_safe(record, fld)
 		# SILSLA-85: Delete OCLC 035 if it only has $z
 		# Confirmed already that all $z fields with no $a have no other subflds
 		if fld["z"] is not None and fld["z"].startswith('(OCoLC)') and fld["a"] is None:
 			remove_field_safe(record, fld)
+
+def delete_035_no_prefix(record):
+	"""Delete 035 field when $a has no (prefix)"""
+	for fld in record.get_fields("035"):
+		if fld["a"] is not None and fld["a"].startswith('(') is False:
+			remove_field_safe(record, fld)
+
+def delete_035_unprefixed_z(record):
+	"""Delete each 035 $z with no (prefix), if field has $a (prefix)"""
+	for fld in record.get_fields("035"):
+		if fld["a"] is not None and fld["a"].startswith('(') is True:
+			# PyMARC subfields, as tuples, truly suck
+			# Find the start of each unwanted tuple
+			# Loop backwards through the unwanted to pop them out of the list
+			# Must go backwards since popping the middle changes the list...
+			all_idx = [i for i in range(len(fld.subfields)) if (i % 2 == 0 and fld.subfields[i] == "z" and fld.subfields[i+1].startswith('(') is False)]
+			for idx in reversed(all_idx):
+				fld.subfields.pop(idx)   #pop value
+				fld.subfields.pop(idx)   #pop code
 
 def move_035(record):
 	"""Move value of 035 $9 to 992 $c"""
@@ -131,21 +167,14 @@ def move_035(record):
 			fld_992 = Field(tag="992", indicators=[' ',' '], subfields=['c', sfld])
 			record.add_ordered_field(fld_992)
 
-def modify_035(record):
-	"""Modify 035 fields if they do not start with (,ucoclc,oc"""
-	for fld in record.get_fields("035"):
-		if (
-			fld["a"]is not None and not fld["a"].startswith('(') and not
-			fld["a"].startswith('ucoclc') and not fld["a"].startswith('oc')
-		   ):
-			fld["a"] = '{}{}'.format("(local)", copy.copy(fld["a"]))
- 
 def do_SILSLA_16(record):
+	delete_019(record)
 	delete_035_subfield(record)
 	delete_035(record)
 	move_035(record)
-	# SILSLA-46: Not modifying 035 with (local) for Test load
-	### modify_035(record)
+	# Do these after other 035 updates
+	delete_035_no_prefix(record)
+	delete_035_unprefixed_z(record)
 
 if len(sys.argv) != 3:
 	raise ValueError(f"Usage: {sys.argv[0]} in_file out_file")
